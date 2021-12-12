@@ -8,15 +8,15 @@ CREATE TABLE accounts (
 
 CREATE TABLE entries (
     id bigserial PRIMARY KEY,
-    account_id bigint,
+    account_id bigint NOT NULL,
     amount bigint NOT NULL,
     created_at timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE transfers (
     id bigserial PRIMARY KEY,
-    from_account_id bigint,
-    to_account_id bigint,
+    from_account_id bigint NOT NULL,
+    to_account_id bigint NOT NULL,
     amount bigint NOT NULL,
     created_at timestamptz NOT NULL DEFAULT (now())
 );
@@ -30,3 +30,5 @@ CREATE INDEX entries_index_1 ON entries (account_id);
 CREATE INDEX transfers_index_2 ON transfers (from_account_id);
 CREATE INDEX transfers_index_3 ON transfers (to_account_id);
 CREATE INDEX transfers_index_4 ON transfers (from_account_id, to_account_id);
+COMMENT ON COLUMN "entries"."amount" IS  'can be negative or positive';
+COMMENT ON COLUMN "transfers"."amount" IS  'must be positive';
