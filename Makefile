@@ -8,9 +8,12 @@ dropdb:
 	winpty docker exec -it simple_bank_db dropdb simple_bank_db
 
 migrateup:
-	migrate -path schema -database "postgresql://root:secret@localhost:5436/simple_bank_db?sslmode=disable" -verbose up
+	migrate -path db/migration -database "postgresql://root:secret@localhost:5436/simple_bank_db?sslmode=disable" -verbose up
 
 migratedown:
-	migrate -path schema -database "postgresql://root:secret@localhost:5436/simple_bank_db?sslmode=disable" -verbose down
+	migrate -path db/migration -database "postgresql://root:secret@localhost:5436/simple_bank_db?sslmode=disable" -verbose down
 
-.PHONY: postgres createdb dropdb migrateup migratedown
+sqlc:
+	docker run --rm -v ${pwd}:/src -w /src kjconroy/sqlc generate
+
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc
