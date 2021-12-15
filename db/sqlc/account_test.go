@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-var testQueries = GetTestQueries()
-
 func createRandomAccount(t *testing.T) Account {
 	arg := CreateAccountParams{
 		Owner:    util.RandomOwner(),
