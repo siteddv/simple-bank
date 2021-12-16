@@ -11,15 +11,21 @@ const (
 	dbSource = "postgresql://root:secret@localhost:5436/simple_bank_db?sslmode=disable"
 )
 
-var testQueries = GetTestQueries()
+var testQueries = getTestQueries()
+var testDB, _ = GetTestDB()
 
-func GetTestQueries() *Queries {
-	conn, err := sql.Open(dbDriver, dbSource)
+func getTestQueries() *Queries {
+	testDB, err := GetTestDB()
 	if err != nil {
 		log.Fatal("cannot connect to db: ", err)
 	}
 
-	testQueries := New(conn)
+	testQueries := New(testDB)
 
 	return testQueries
+}
+
+func GetTestDB() (*sql.DB, error) {
+	testDB, err := sql.Open(dbDriver, dbSource)
+	return testDB, err
 }
