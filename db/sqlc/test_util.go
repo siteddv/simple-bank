@@ -12,10 +12,10 @@ const (
 )
 
 var testQueries = getTestQueries()
-var testDB, _ = GetTestDB()
+var testDB, _ = getTestDB()
 
 func getTestQueries() *Queries {
-	testDB, err := GetTestDB()
+	testDB, err := getTestDB()
 	if err != nil {
 		log.Fatal("cannot connect to db: ", err)
 	}
@@ -25,7 +25,7 @@ func getTestQueries() *Queries {
 	return testQueries
 }
 
-func GetTestDB() (*sql.DB, error) {
+func getTestDB() (*sql.DB, error) {
 	testDB, err := sql.Open(dbDriver, dbSource)
 	return testDB, err
 }
