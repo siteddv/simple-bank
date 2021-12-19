@@ -49,7 +49,7 @@ jobs:
         run: make migrateup
 
       - name: Installing dependencies
-        run: go get ./...
+        run: go get -t github.com/siteddv/simple-bank/db/sqlc
 
       - name: test
         run: make test
