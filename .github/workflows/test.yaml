@@ -48,11 +48,5 @@ jobs:
       - name: Run migrations
         run: make migrateup
 
-      - name: Installing dependencies
-        run: | 
-          go get -t github.com/siteddv/simple-bank/db/sqlc
-          go get github.com/siteddv/simple-bank/api
-          go get github.com/siteddv/simple-bank/db/mock
-
       - name: test
         run: make test
