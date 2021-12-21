@@ -3,12 +3,8 @@ package db
 import (
 	"database/sql"
 	_ "github.com/lib/pq"
+	"github.com/siteddv/simple-bank/util"
 	"log"
-)
-
-const (
-	dbDriver = "postgres"
-	dbSource = "postgresql://root:secret@localhost:5436/simple_bank_db?sslmode=disable"
 )
 
 var testQueries = getTestQueries()
@@ -26,6 +22,11 @@ func getTestQueries() *Queries {
 }
 
 func getTestDB() (*sql.DB, error) {
-	testDB, err := sql.Open(dbDriver, dbSource)
+	config, err := util.LoadConfig("../..")
+	if err != nil {
+		log.Fatal("cannot load configs", err)
+	}
+
+	testDB, err := sql.Open(config.DBDriver, config.DBSource)
 	return testDB, err
 }
