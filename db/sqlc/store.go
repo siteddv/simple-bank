@@ -6,13 +6,22 @@ import (
 	"fmt"
 )
 
-type Store struct {
+//go:generate mockgen -package mockdb -destination ../mock/store.go github.com/siteddv/simple-bank/db/sqlc Store
+
+// Store provides all functions to execute SQL queries and transactions
+type Store interface {
+	Querier
+	TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error)
+}
+
+// SQLStore provides all functions to execute SQL queries and transactions
+type SQLStore struct {
 	*Queries
 	db *sql.DB
 }
 
-func NewStore(db *sql.DB) *Store {
-	res := &Store{
+func NewStore(db *sql.DB) Store {
+	res := &SQLStore{
 		db:      db,
 		Queries: New(db),
 	}
@@ -20,7 +29,7 @@ func NewStore(db *sql.DB) *Store {
 }
 
 // execTr executes a function within database transaction
-func (store *Store) execTr(ctx context.Context,
+func (store *SQLStore) execTr(ctx context.Context,
 	fn func(*Queries) error) error {
 
 	tx, err := store.db.BeginTx(ctx, nil)
@@ -58,7 +67,7 @@ type TransferTxResult struct {
 
 // TransferTx performs a money transfer from one account to other
 // It creates a transfer record, add account entries, and update accounts' balance within a single database transaction
-func (store *Store) TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error) {
+func (store *SQLStore) TransferTx(ctx context.Context, arg TransferTxParams) (TransferTxResult, error) {
 	var result TransferTxResult
 
 	err := store.execTr(ctx, func(q *Queries) error {
