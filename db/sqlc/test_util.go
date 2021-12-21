@@ -22,7 +22,7 @@ func getTestQueries() *Queries {
 }
 
 func getTestDB() (*sql.DB, error) {
-	config, err := util.LoadConfig("..")
+	config, err := util.LoadConfig("../..")
 	if err != nil {
 		log.Fatal("cannot load configs", err)
 	}
