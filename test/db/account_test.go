@@ -3,16 +3,17 @@ package db
 import (
 	"context"
 	"database/sql"
-	"github.com/siteddv/simple-bank/util"
+	"github.com/siteddv/simple-bank/internal/db/sqlc"
+	"github.com/siteddv/simple-bank/internal/util"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
 )
 
-func createRandomAccount(t *testing.T) Account {
+func createRandomAccount(t *testing.T) db.Account {
 	user := createRandomUser(t)
 
-	arg := CreateAccountParams{
+	arg := db.CreateAccountParams{
 		Owner:    user.Username,
 		Balance:  util.RandomMoney(),
 		Currency: util.RandomCurrency(),
@@ -56,7 +57,7 @@ func Test_GetAccount(t *testing.T) {
 func Test_UpdateAccount(t *testing.T) {
 	account1 := createRandomAccount(t)
 
-	arg := UpdateAccountParams{
+	arg := db.UpdateAccountParams{
 		ID:      account1.ID,
 		Balance: util.RandomMoney(),
 	}
@@ -88,12 +89,12 @@ func Test_DeleteAccount(t *testing.T) {
 }
 
 func Test_ListAccounts(t *testing.T) {
-	var listAccount Account
+	var listAccount db.Account
 	for i := 0; i < 10; i++ {
 		listAccount = createRandomAccount(t)
 	}
 
-	arg := ListAccountsParams{
+	arg := db.ListAccountsParams{
 		Owner:  listAccount.Owner,
 		Limit:  5,
 		Offset: 0,

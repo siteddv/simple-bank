@@ -3,7 +3,8 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/siteddv/simple-bank/token"
+	"github.com/siteddv/simple-bank/api"
+	"github.com/siteddv/simple-bank/internal/token"
 	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
@@ -23,7 +24,7 @@ func addAuthorization(
 	require.NoError(t, err)
 
 	authorizationHeader := fmt.Sprintf("%s %s", authorizationType, accessToken)
-	request.Header.Set(authorizationHeaderKey, authorizationHeader)
+	request.Header.Set(api.AuthorizationHeaderKey, authorizationHeader)
 }
 
 func TestAuthMiddleware(t *testing.T) {
@@ -35,7 +36,7 @@ func TestAuthMiddleware(t *testing.T) {
 		{
 			name: "OK",
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, "user", time.Minute)
+				addAuthorization(t, request, tokenMaker, api.AuthorizationTypeBearer, "user", time.Minute)
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
@@ -70,7 +71,7 @@ func TestAuthMiddleware(t *testing.T) {
 		{
 			name: "ExpiredToken",
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
-				addAuthorization(t, request, tokenMaker, authorizationTypeBearer, "user", -time.Minute)
+				addAuthorization(t, request, tokenMaker, api.AuthorizationTypeBearer, "user", -time.Minute)
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusUnauthorized, recorder.Code)
@@ -84,9 +85,9 @@ func TestAuthMiddleware(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			server := newTestServer(t, nil)
 			authPath := "/auth"
-			server.router.GET(
+			server.Router.GET(
 				authPath,
-				authMiddleware(server.tokenMaker),
+				api.AuthMiddleware(server.TokenMaker),
 				func(ctx *gin.Context) {
 					ctx.JSON(http.StatusOK, gin.H{})
 				},
@@ -96,8 +97,8 @@ func TestAuthMiddleware(t *testing.T) {
 			request, err := http.NewRequest(http.MethodGet, authPath, nil)
 			require.NoError(t, err)
 
-			tc.setupAuth(t, request, server.tokenMaker)
-			server.router.ServeHTTP(recorder, request)
+			tc.setupAuth(t, request, server.TokenMaker)
+			server.Router.ServeHTTP(recorder, request)
 			tc.checkResponse(t, recorder)
 		})
 	}

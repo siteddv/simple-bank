@@ -2,23 +2,24 @@ package db
 
 import (
 	"context"
-	"github.com/siteddv/simple-bank/util"
+	"github.com/siteddv/simple-bank/internal/db/sqlc"
+	util2 "github.com/siteddv/simple-bank/internal/util"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomUser(t *testing.T) User {
-	password := util.RandomString(6)
-	hashedPassword, err := util.HashPassword(password)
+func createRandomUser(t *testing.T) db.User {
+	password := util2.RandomString(6)
+	hashedPassword, err := util2.HashPassword(password)
 	require.NoError(t, err)
 
-	arg := CreateUserParams{
-		Username:       util.RandomOwner(),
+	arg := db.CreateUserParams{
+		Username:       util2.RandomOwner(),
 		HashedPassword: hashedPassword,
-		FullName:       util.RandomOwner(),
-		Email:          util.RandomEmail(),
+		FullName:       util2.RandomOwner(),
+		Email:          util2.RandomEmail(),
 	}
 
 	user, err := testQueries.CreateUser(context.Background(), arg)

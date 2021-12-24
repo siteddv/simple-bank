@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"github.com/gin-gonic/gin"
 	"github.com/lib/pq"
-	db "github.com/siteddv/simple-bank/db/sqlc"
-	"github.com/siteddv/simple-bank/util"
+	db2 "github.com/siteddv/simple-bank/internal/db/sqlc"
+	"github.com/siteddv/simple-bank/internal/util"
 	"net/http"
 	"time"
 )
@@ -25,7 +25,7 @@ type createUserRequest struct {
 	Email    string `json:"email" binding:"required,email"`
 }
 
-func newUserResponse(user db.User) userResponse {
+func newUserResponse(user db2.User) userResponse {
 	return userResponse{
 		Username:          user.Username,
 		FullName:          user.FullName,
@@ -48,7 +48,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 		return
 	}
 
-	arg := db.CreateUserParams{
+	arg := db2.CreateUserParams{
 		Username:       req.Username,
 		HashedPassword: hashedPassword,
 		FullName:       req.FullName,
@@ -106,7 +106,7 @@ func (server *Server) loginUser(ctx *gin.Context) {
 		return
 	}
 
-	accessToken, err := server.tokenMaker.CreateToken(
+	accessToken, err := server.TokenMaker.CreateToken(
 		user.Username,
 		server.config.AccessTokenDuration,
 	)

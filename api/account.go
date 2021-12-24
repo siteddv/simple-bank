@@ -3,8 +3,8 @@ package api
 import (
 	"database/sql"
 	"errors"
-	db "github.com/siteddv/simple-bank/db/sqlc"
-	"github.com/siteddv/simple-bank/token"
+	"github.com/siteddv/simple-bank/internal/db/sqlc"
+	"github.com/siteddv/simple-bank/internal/token"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

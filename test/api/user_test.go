@@ -5,9 +5,9 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	mockdb "github.com/siteddv/simple-bank/db/mock"
-	db "github.com/siteddv/simple-bank/db/sqlc"
-	"github.com/siteddv/simple-bank/util"
+	db2 "github.com/siteddv/simple-bank/internal/db/sqlc"
+	util2 "github.com/siteddv/simple-bank/internal/util"
+	"github.com/siteddv/simple-bank/test/db/mock"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -20,18 +20,18 @@ import (
 )
 
 type eqCreateUserParamsMatcher struct {
-	arg      db.CreateUserParams
+	arg      db2.CreateUserParams
 	password string
 }
 
 func (e eqCreateUserParamsMatcher) Matches(x interface{}) bool {
 
-	arg, ok := x.(db.CreateUserParams)
+	arg, ok := x.(db2.CreateUserParams)
 	if !ok {
 		return false
 	}
 
-	err := util.CheckPassword(e.password, arg.HashedPassword)
+	err := util2.CheckPassword(e.password, arg.HashedPassword)
 	if err != nil {
 		return false
 	}
@@ -45,7 +45,7 @@ func (e eqCreateUserParamsMatcher) String() string {
 	return fmt.Sprintf("matches arg %v and password %v", e.arg, e.password)
 }
 
-func EqCreateUserParams(arg db.CreateUserParams, password string) gomock.Matcher {
+func EqCreateUserParams(arg db2.CreateUserParams, password string) gomock.Matcher {
 	return eqCreateUserParamsMatcher{arg, password}
 }
 
@@ -67,7 +67,7 @@ func TestCreateUserAPI(t *testing.T) {
 				"email":     user.Email,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
-				arg := db.CreateUserParams{
+				arg := db2.CreateUserParams{
 					Username: user.Username,
 					FullName: user.FullName,
 					Email:    user.Email,
@@ -94,7 +94,7 @@ func TestCreateUserAPI(t *testing.T) {
 				store.EXPECT().
 					CreateUser(gomock.Any(), gomock.Any()).
 					Times(1).
-					Return(db.User{}, sql.ErrConnDone)
+					Return(db2.User{}, sql.ErrConnDone)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusInternalServerError, recorder.Code)
@@ -174,31 +174,31 @@ func TestCreateUserAPI(t *testing.T) {
 			request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
 			require.NoError(t, err)
 
-			server.router.ServeHTTP(recorder, request)
+			server.Router.ServeHTTP(recorder, request)
 			tc.checkResponse(recorder)
 		})
 	}
 }
 
-func randomUser(t *testing.T) (user db.User, password string) {
-	password = util.RandomString(6)
-	hashedPassword, err := util.HashPassword(password)
+func randomUser(t *testing.T) (user db2.User, password string) {
+	password = util2.RandomString(6)
+	hashedPassword, err := util2.HashPassword(password)
 	require.NoError(t, err)
 
-	user = db.User{
-		Username:       util.RandomOwner(),
+	user = db2.User{
+		Username:       util2.RandomOwner(),
 		HashedPassword: hashedPassword,
-		FullName:       util.RandomOwner(),
-		Email:          util.RandomEmail(),
+		FullName:       util2.RandomOwner(),
+		Email:          util2.RandomEmail(),
 	}
 	return
 }
 
-func requireBodyMatchUser(t *testing.T, body *bytes.Buffer, user db.User) {
+func requireBodyMatchUser(t *testing.T, body *bytes.Buffer, user db2.User) {
 	data, err := ioutil.ReadAll(body)
 	require.NoError(t, err)
 
-	var gotUser db.User
+	var gotUser db2.User
 	err = json.Unmarshal(data, &gotUser)
 
 	require.NoError(t, err)

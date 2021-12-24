@@ -3,12 +3,13 @@ package db
 import (
 	"context"
 	"fmt"
+	"github.com/siteddv/simple-bank/internal/db/sqlc"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func TestTransferTx(t *testing.T) {
-	store := NewStore(testDB)
+	store := db.NewStore(testDB)
 
 	account1 := createRandomAccount(t)
 	account2 := createRandomAccount(t)
@@ -18,12 +19,12 @@ func TestTransferTx(t *testing.T) {
 	amount := int64(10)
 
 	errs := make(chan error)
-	results := make(chan TransferTxResult)
+	results := make(chan db.TransferTxResult)
 
 	// run n concurrent transfer transaction
 	for i := 0; i < n; i++ {
 		go func() {
-			result, err := store.TransferTx(context.Background(), TransferTxParams{
+			result, err := store.TransferTx(context.Background(), db.TransferTxParams{
 				FromAccountID: account1.ID,
 				ToAccountID:   account2.ID,
 				Amount:        amount,
@@ -116,7 +117,7 @@ func TestTransferTx(t *testing.T) {
 }
 
 func TestTransferTxDeadlock(t *testing.T) {
-	store := NewStore(testDB)
+	store := db.NewStore(testDB)
 
 	account1 := createRandomAccount(t)
 	account2 := createRandomAccount(t)
@@ -136,7 +137,7 @@ func TestTransferTxDeadlock(t *testing.T) {
 			toAccountID = account1.ID
 		}
 		go func() {
-			_, err := store.TransferTx(context.Background(), TransferTxParams{
+			_, err := store.TransferTx(context.Background(), db.TransferTxParams{
 				FromAccountID: fromAccountID,
 				ToAccountID:   toAccountID,
 				Amount:        amount,

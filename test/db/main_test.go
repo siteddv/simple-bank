@@ -2,7 +2,8 @@ package db
 
 import (
 	"database/sql"
-	"github.com/siteddv/simple-bank/util"
+	"github.com/siteddv/simple-bank/internal/db/sqlc"
+	"github.com/siteddv/simple-bank/internal/util"
 	"log"
 	"os"
 	"testing"
@@ -10,7 +11,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var testQueries *Queries
+var testQueries *db.Queries
 var testDB *sql.DB
 
 func TestMain(m *testing.M) {
@@ -24,7 +25,7 @@ func TestMain(m *testing.M) {
 		log.Fatal("cannot connect to db:", err)
 	}
 
-	testQueries = New(testDB)
+	testQueries = db.New(testDB)
 
 	os.Exit(m.Run())
 }

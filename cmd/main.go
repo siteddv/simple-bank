@@ -3,8 +3,8 @@ package main
 import (
 	"database/sql"
 	"github.com/siteddv/simple-bank/api"
-	db "github.com/siteddv/simple-bank/db/sqlc"
-	"github.com/siteddv/simple-bank/util"
+	"github.com/siteddv/simple-bank/internal/db/sqlc"
+	"github.com/siteddv/simple-bank/internal/util"
 	"log"
 )
 

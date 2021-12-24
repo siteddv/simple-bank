@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	db "github.com/siteddv/simple-bank/db/sqlc"
-	"github.com/siteddv/simple-bank/token"
+	db2 "github.com/siteddv/simple-bank/internal/db/sqlc"
+	"github.com/siteddv/simple-bank/internal/token"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -42,7 +42,7 @@ func (server *Server) createTransfer(ctx *gin.Context) {
 		return
 	}
 
-	arg := db.TransferTxParams{
+	arg := db2.TransferTxParams{
 		FromAccountID: req.FromAccountID,
 		ToAccountID:   req.ToAccountID,
 		Amount:        req.Amount,
@@ -57,7 +57,7 @@ func (server *Server) createTransfer(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 
-func (server *Server) validAccount(ctx *gin.Context, accountID int64, currency string) (db.Account, bool) {
+func (server *Server) validAccount(ctx *gin.Context, accountID int64, currency string) (db2.Account, bool) {
 	account, err := server.store.GetAccount(ctx, accountID)
 	if err != nil {
 		if err == sql.ErrNoRows {

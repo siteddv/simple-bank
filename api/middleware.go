@@ -4,14 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/siteddv/simple-bank/token"
+	"github.com/siteddv/simple-bank/internal/token"
 	"net/http"
 	"strings"
 )
 
 const (
-	authorizationHeaderKey  = "authorization"
-	authorizationTypeBearer = "bearer"
+	AuthorizationHeaderKey  = "authorization"
+	AuthorizationTypeBearer = "bearer"
 	authorizationPayloadKey = "authorization_payload"
 
 	authTypeIndex  = 0
@@ -19,9 +19,9 @@ const (
 )
 
 // AuthMiddleware creates a gin middleware for authorization
-func authMiddleware(tokenMaker token.Maker) gin.HandlerFunc {
+func AuthMiddleware(tokenMaker token.Maker) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		authorizationHeader := ctx.GetHeader(authorizationHeaderKey)
+		authorizationHeader := ctx.GetHeader(AuthorizationHeaderKey)
 
 		if len(authorizationHeader) == 0 {
 			err := errors.New("authorization header is not provided")
@@ -37,7 +37,7 @@ func authMiddleware(tokenMaker token.Maker) gin.HandlerFunc {
 		}
 
 		authorizationType := strings.ToLower(fields[authTypeIndex])
-		if authorizationType != authorizationTypeBearer {
+		if authorizationType != AuthorizationTypeBearer {
 			err := fmt.Errorf("unsupported authorization type %s", authorizationType)
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(err))
 			return
